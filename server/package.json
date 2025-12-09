@@ -10,6 +10,7 @@
     "test:coverage": "jest --coverage --runInBand",
     "seed": "tsx src/seed.ts",
     "seed:profile": "tsx src/seed/seed-profile.ts",
+    "seed:users": "tsx src/scripts/seedUsers.ts",
     "seed:gamification": "tsx src/scripts/seedGamificationModules.ts",
     "migrate:blocks": "tsx src/scripts/migrateToBlocks.ts",
     "migrate:pages": "tsx src/scripts/migratePageToBlocks.ts"

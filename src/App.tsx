@@ -70,16 +70,12 @@ function App() {
           <Route path="/flow-arcade" element={<FlowArcadePage />} />
           <Route path="/period-tracker" element={<PeriodTrackerPage />} />
           <Route path="/get-involved" element={<GetInvolvedPage />} />
-        </Route>
-
-        {/* Legacy/Admin Routes */}
-        <Route element={<Layout />}>
-          <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route
             path="/dashboard"
             element={
@@ -104,6 +100,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+        </Route>
+
+        {/* Admin Routes */}
+        <Route element={<Layout />}>
           <Route path="/demo/quiz" element={<QuizDemoPage />} />
           <Route path="/quiz-demo" element={<QuizDemoPage />} />
           <Route path="/debug-ai" element={<DebugAIGenerator />} />

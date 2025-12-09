@@ -50,8 +50,8 @@ const Navigation = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive(link.path)
-                                        ? 'bg-[#ce8fd3] text-white'
-                                        : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
+                                    ? 'bg-[#ce8fd3] text-white'
+                                    : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
                                     }`}
                             >
                                 {link.label}
@@ -61,6 +61,17 @@ const Navigation = () => {
 
                     {/* Quick Exit & Mobile Menu */}
                     <div className="flex items-center gap-3">
+                        {/* Login Button */}
+                        <Link to="/login">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="hidden md:inline-flex border-[#ce8fd3] text-[#ce8fd3] hover:bg-[#ce8fd3] hover:text-white"
+                            >
+                                Login
+                            </Button>
+                        </Link>
+
                         <Button
                             onClick={handleQuickExit}
                             size="sm"
@@ -103,13 +114,21 @@ const Navigation = () => {
                                     to={link.path}
                                     onClick={() => setIsOpen(false)}
                                     className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(link.path)
-                                            ? 'bg-[#ce8fd3] text-white'
-                                            : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
+                                        ? 'bg-[#ce8fd3] text-white'
+                                        : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
                                         }`}
                                 >
                                     {link.label}
                                 </Link>
                             ))}
+                            {/* Login Link for Mobile */}
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-[#ce8fd3] text-white text-center"
+                            >
+                                Login / Sign Up
+                            </Link>
                         </div>
                     </motion.div>
                 )}

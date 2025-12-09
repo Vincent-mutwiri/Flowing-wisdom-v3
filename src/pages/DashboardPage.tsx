@@ -46,54 +46,62 @@ export default function DashboardPage() {
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Enrolled</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalEnrolled || 0}</div>
-                <p className="text-xs text-muted-foreground">Total courses</p>
+                <div className="text-3xl font-bold text-primary">{stats?.totalEnrolled || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Total courses</p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-accent-foreground" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.inProgress || 0}</div>
-                <p className="text-xs text-muted-foreground">Active courses</p>
+                <div className="text-3xl font-bold text-accent-foreground">{stats?.inProgress || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Active courses</p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                <Award className="h-4 w-4 text-muted-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                  <Award className="h-5 w-5 text-secondary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.completed || 0}</div>
-                <p className="text-xs text-muted-foreground">Finished courses</p>
+                <div className="text-3xl font-bold text-secondary">{stats?.completed || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Finished courses</p>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats?.avgProgress || 0}%</div>
-                <p className="text-xs text-muted-foreground">Overall completion</p>
+                <div className="text-3xl font-bold text-primary">{stats?.avgProgress || 0}%</div>
+                <p className="text-xs text-muted-foreground mt-1">Overall completion</p>
               </CardContent>
             </Card>
           </div>
 
           {stats?.totalEnrolled === 0 && (
-            <Card className="text-center py-12">
-              <CardContent className="space-y-6">
+            <Card className="text-center py-12 border-0 shadow-lg">
+              <CardContent className="space-y-6 p-8">
                 <div className="space-y-4">
                   <BookOpen className="h-16 w-16 mx-auto text-muted-foreground" />
                   <div className="space-y-2">
@@ -104,10 +112,10 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg">
+                  <Button asChild size="lg" className="rounded-full px-8">
                     <Link to="/courses">Browse Courses</Link>
                   </Button>
-                  <Button variant="outline" asChild size="lg">
+                  <Button variant="outline" asChild size="lg" className="rounded-full px-8">
                     <Link to="/ai-assistant">Get AI Recommendations</Link>
                   </Button>
                 </div>

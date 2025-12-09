@@ -40,14 +40,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Welcome Back</h1>
-          <p className="text-muted-foreground mt-2">Login to your account</p>
+    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
+          <p className="text-muted-foreground">Login to your account</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="bg-card border-0 shadow-xl rounded-3xl p-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {successMessage && (
             <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md text-sm">
               {successMessage}
@@ -90,17 +91,18 @@ export default function LoginPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
             {isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-primary hover:underline">
+          <Link to="/signup" className="text-primary hover:underline font-medium">
             Sign up
           </Link>
         </p>
+        </div>
       </div>
     </div>
   );

@@ -157,18 +157,17 @@ function AreasSection({ areas }: AreasSectionProps) {
                             const Icon = iconMap[area.icon] || BookOpen;
                             return (
                                 <motion.div key={index} variants={fadeInUp}>
-                                    <div className="group relative h-full p-8 rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        <div className="relative z-10">
-                                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-neutral-800 shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                                                <Icon className="h-7 w-7 text-primary" />
+                                    <Card className="group relative h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                                        <CardContent className="p-8">
+                                            <div className={`w-16 h-16 ${index % 3 === 0 ? 'bg-primary' : index % 3 === 1 ? 'bg-accent' : 'bg-secondary'} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                                                <Icon className="h-8 w-8 text-white" />
                                             </div>
-                                            <h3 className="text-xl font-bold mb-3 text-neutral-900 dark:text-neutral-100">{area.title}</h3>
-                                            <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                                            <h3 className="text-xl font-bold mb-3">{area.title}</h3>
+                                            <p className="text-muted-foreground leading-relaxed">
                                                 {area.description}
                                             </p>
-                                        </div>
-                                    </div>
+                                        </CardContent>
+                                    </Card>
                                 </motion.div>
                             );
                         })}
@@ -214,19 +213,23 @@ function PartnersSection({ partners }: PartnersSectionProps) {
                                     href={partner.website || '#'}
                                     target={partner.website ? "_blank" : undefined}
                                     rel="noopener noreferrer"
-                                    className="group block p-8 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                                    className="group block"
                                 >
-                                    <div className="aspect-[3/2] flex items-center justify-center p-4 grayscale group-hover:grayscale-0 transition-all duration-300">
-                                        <img
-                                            src={partner.logo}
-                                            alt={`${partner.name} logo`}
-                                            className="max-w-full max-h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300"
-                                            onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
-                                                e.currentTarget.parentElement!.innerHTML = `<span class="text-lg font-bold text-neutral-400 group-hover:text-primary transition-colors duration-300 text-center">${partner.name}</span>`;
-                                            }}
-                                        />
-                                    </div>
+                                    <Card className="shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                                        <CardContent className="p-8">
+                                            <div className="aspect-[3/2] flex items-center justify-center p-4 grayscale group-hover:grayscale-0 transition-all duration-300">
+                                                <img
+                                                    src={partner.logo}
+                                                    alt={`${partner.name} logo`}
+                                                    className="max-w-full max-h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300"
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = 'none';
+                                                        e.currentTarget.parentElement!.innerHTML = `<span class="text-lg font-bold text-muted-foreground group-hover:text-primary transition-colors duration-300 text-center">${partner.name}</span>`;
+                                                    }}
+                                                />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </a>
                             </motion.div>
                         ))}
@@ -331,15 +334,17 @@ function WhyWorkWithUsSection({ reasons }: WhyWorkWithUsSectionProps) {
                             const Icon = iconMap[reason.icon] || Award;
                             return (
                                 <motion.div key={index} variants={fadeInUp}>
-                                    <div className="h-full p-8 rounded-3xl bg-neutral-800/50 border border-neutral-700 hover:bg-neutral-800 transition-all duration-300">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
-                                            <Icon className="h-7 w-7 text-white" />
-                                        </div>
-                                        <h3 className="text-xl font-bold mb-3 text-white">{reason.title}</h3>
-                                        <p className="text-neutral-400 leading-relaxed">
-                                            {reason.description}
-                                        </p>
-                                    </div>
+                                    <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:bg-card/80 transition-all duration-300">
+                                        <CardContent className="p-8">
+                                            <div className={`w-16 h-16 rounded-2xl ${index % 3 === 0 ? 'bg-primary' : index % 3 === 1 ? 'bg-accent' : 'bg-secondary'} flex items-center justify-center mb-6 shadow-lg`}>
+                                                <Icon className="h-8 w-8 text-white" />
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-3">{reason.title}</h3>
+                                            <p className="text-muted-foreground leading-relaxed">
+                                                {reason.description}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
                                 </motion.div>
                             );
                         })}
@@ -458,7 +463,7 @@ function FeaturedCoursesSection({ courseIds }: FeaturedCoursesSectionProps) {
                         {courses.map((course, index) => (
                             <motion.div key={course._id} variants={fadeInUp}>
                                 <Link to={`/course/${course._id}`} className="block h-full group">
-                                    <div className="h-full rounded-3xl overflow-hidden bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:shadow-2xl hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 flex flex-col">
+                                    <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col overflow-hidden">
                                         <div className="relative w-full h-56 overflow-hidden">
                                             {course.thumbnail ? (
                                                 <img

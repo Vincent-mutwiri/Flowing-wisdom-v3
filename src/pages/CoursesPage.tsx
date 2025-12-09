@@ -228,9 +228,9 @@ export default function CoursesPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAndSortedCourses.map((course) => (
-            <Card key={course._id} className="hover:shadow-lg transition-shadow overflow-hidden">
+            <Card key={course._id} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
               {/* Course Thumbnail */}
-              <div className="relative h-48 bg-gradient-to-br from-primary/20 to-accent/20">
+              <div className="relative h-48 bg-gradient-to-br from-primary/10 to-accent/10">
                 {course.thumbnail ? (
                   <img
                     src={course.thumbnail}
@@ -274,7 +274,7 @@ export default function CoursesPage() {
               </div>
               
               <CardHeader className="pb-3">
-                <CardTitle className="line-clamp-2 text-lg">{course.title}</CardTitle>
+                <CardTitle className="line-clamp-2 text-xl group-hover:text-primary transition-colors">{course.title}</CardTitle>
                 <CardDescription className="flex items-center gap-1">
                   <span>{course.instructor}</span>
                 </CardDescription>
@@ -297,15 +297,15 @@ export default function CoursesPage() {
                 </div>
                 
                 <div className="flex gap-2">
-                  <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-medium">
+                  <span className="text-xs px-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
                     {course.level}
                   </span>
-                  <span className="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full font-medium">
+                  <span className="text-xs px-3 py-1 bg-accent/10 text-accent-foreground rounded-full font-medium">
                     {course.category}
                   </span>
                 </div>
                 
-                <Button asChild className="w-full">
+                <Button asChild className="w-full rounded-full group-hover:scale-105 transition-transform">
                   <Link to={`/course/${course._id}`}>
                     {course.isEnrolled ? 'Continue Learning' : 'View Course'}
                   </Link>
