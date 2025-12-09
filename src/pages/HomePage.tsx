@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSiteConfig, type Area, type Partner, type Reason, type CompanyInfo } from '@/config/sites';
 import { courseAPI } from '@/services/api';
-import { AuroraBackground } from '@/components/ui/aurora-background';
+import { BackgroundPaths } from '@/components/ui/background-paths';
 
 // Icon mapping for dynamic icon rendering
 const iconMap: Record<string, any> = {
@@ -82,12 +82,15 @@ interface HeroSectionProps {
 
 function HeroSection({ companyInfo, theme }: HeroSectionProps) {
     return (
-        <AuroraBackground>
+        <BackgroundPaths
+            title={companyInfo.name}
+            className="bg-gradient-to-br from-background via-primary/5 to-secondary/5"
+        >
             <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={staggerContainer}
-                className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8"
+                className="relative z-10 max-w-4xl mx-auto text-center"
             >
                 <motion.h1
                     variants={fadeInUp}
@@ -120,7 +123,7 @@ function HeroSection({ companyInfo, theme }: HeroSectionProps) {
                     </Button>
                 </motion.div>
             </motion.div>
-        </AuroraBackground>
+        </BackgroundPaths>
     );
 }
 
@@ -505,7 +508,7 @@ function FeaturedCoursesSection({ courseIds }: FeaturedCoursesSectionProps) {
                                                 </span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Card>
                                 </Link>
                             </motion.div>
                         ))}

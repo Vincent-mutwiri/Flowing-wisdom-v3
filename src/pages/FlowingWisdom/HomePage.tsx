@@ -4,6 +4,8 @@ import { BookOpen, Calendar, Heart, Sparkles, Users, Gamepad2 } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 
+import { BackgroundPaths } from '@/components/ui/background-paths';
+
 const HomePage = () => {
     const [counts, setCounts] = useState({ lives: 0, workshops: 0, ambassadors: 0 });
 
@@ -74,8 +76,10 @@ const HomePage = () => {
     return (
         <div className="min-h-screen bg-[#FFF9F0]">
             {/* Hero Section */}
-            <section className="relative overflow-hidden py-20 px-4">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#ce8fd3]/20 via-[#4ECDC4]/10 to-[#FFE66D]/20" />
+            <BackgroundPaths
+                title="Flowing Wisdom"
+                className="py-20 px-4 bg-gradient-to-br from-[#ce8fd3]/20 via-[#4ECDC4]/10 to-[#FFE66D]/20"
+            >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -98,7 +102,7 @@ const HomePage = () => {
                         </Button>
                     </div>
                 </motion.div>
-            </section>
+            </BackgroundPaths>
 
             {/* Impact Counter */}
             <section className="py-16 px-4 bg-white">

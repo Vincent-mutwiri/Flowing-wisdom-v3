@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, AlertTriangle, Shield } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
@@ -14,18 +14,12 @@ const Navigation = () => {
         { path: '/', label: 'Home' },
         { path: '/about', label: 'About Us' },
         { path: '/events', label: 'Events' },
-        { path: '/our-impact', label: 'Our Impact' },
         { path: '/learning-hub', label: 'Learning Hub' },
         { path: '/ask-iris', label: 'Ask Iris' },
         { path: '/flow-arcade', label: 'Flow Arcade' },
         { path: '/period-tracker', label: 'Period Tracker' },
         { path: '/get-involved', label: 'Get Involved' }
     ];
-
-    const handleQuickExit = () => {
-        // Redirect to Google and clear history
-        window.location.replace('https://www.google.com');
-    };
 
     const isActive = (path: string) => {
         return location.pathname === path;
@@ -61,7 +55,7 @@ const Navigation = () => {
                         ))}
                     </div>
 
-                    {/* Quick Exit & Mobile Menu */}
+                    {/* Mobile Menu */}
                     <div className="flex items-center gap-3">
                         {/* Admin Button - Only show for admin users */}
                         {user?.role === 'admin' && (
@@ -99,16 +93,6 @@ const Navigation = () => {
                                 </Button>
                             </Link>
                         )}
-
-                        <Button
-                            onClick={handleQuickExit}
-                            size="sm"
-                            variant="outline"
-                            className="border-[#FF6B6B] text-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white"
-                        >
-                            <AlertTriangle className="w-4 h-4 mr-2" />
-                            <span className="hidden sm:inline">Quick Exit</span>
-                        </Button>
 
                         {/* Mobile Menu Button */}
                         <button

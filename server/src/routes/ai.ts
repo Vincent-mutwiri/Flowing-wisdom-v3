@@ -43,17 +43,37 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
       type: m.role === "user" ? "Human" : "AI"
     }));
 
-    const response = await axios.post(
-      INFLECTION_API_URL,
-      { context, config: "Pi-3.1" },
-      {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
+    // Retry logic for network issues
+    let response;
+    let lastError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        response = await axios.post(
+          INFLECTION_API_URL,
+          { context, config: "Pi-3.1" },
+          {
+            headers: {
+              'Authorization': `Bearer ${API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            timeout: 60000
+          }
+        );
+        break; // Success, exit retry loop
+      } catch (err: any) {
+        lastError = err;
+        console.log(`Attempt ${attempt}/3 failed:`, err.message);
+        if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
-    );
+    }
+
+    if (!response) {
+      // Fallback when API is unavailable
+      const fallbackResponse = "I'm currently experiencing connectivity issues with the AI service. Please try again in a moment. If this persists, the service may be temporarily unavailable.";
+      chatHistory.messages.push({ role: "assistant", content: fallbackResponse, timestamp: new Date() });
+      await chatHistory.save();
+      return res.json({ response: fallbackResponse, history: chatHistory.messages, fallback: true });
+    }
 
     const aiResponse = response.data.text || 'No response generated';
     chatHistory.messages.push({ role: "assistant", content: aiResponse, timestamp: new Date() });
@@ -61,10 +81,18 @@ router.post("/chat", authenticate, async (req: AuthRequest, res: Response) => {
 
     res.json({ response: aiResponse, history: chatHistory.messages });
   } catch (error: any) {
-    console.error("AI Error:", error.response ? error.response.data : error.message);
+    console.error("AI Error Details:", {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: INFLECTION_API_URL,
+      hasApiKey: !!API_KEY
+    });
     res.status(500).json({
       message: "AI service error",
-      error: error.response?.data || error.message
+      details: error.response?.data?.message || error.message,
+      status: error.response?.status
     });
   }
 });

@@ -48,7 +48,7 @@ const staggerContainer = {
     }
 };
 
-export default function Flowing WisdomLandingPage() {
+export default function EdulimikaLandingPage() {
     const siteConfig = getSiteConfig();
     const companyInfo = siteConfig.content.companyInfo;
 

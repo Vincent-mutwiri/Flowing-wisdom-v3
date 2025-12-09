@@ -32,7 +32,6 @@ import FlowingWisdomLayout from "./components/FlowingWisdom/FlowingWisdomLayout"
 import FWHomePage from "./pages/FlowingWisdom/HomePage";
 import AboutPage from "./pages/FlowingWisdom/AboutPage";
 import EventsPage from "./pages/FlowingWisdom/EventsPage";
-import OurImpactPage from "./pages/FlowingWisdom/OurImpactPage";
 import LearningHubPage from "./pages/FlowingWisdom/LearningHubPage";
 import FlowArcadePage from "./pages/FlowingWisdom/FlowArcadePage";
 import PeriodTrackerPage from "./pages/FlowingWisdom/PeriodTrackerPage";
@@ -64,7 +63,6 @@ function App() {
           <Route path="/" element={<FWHomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/events" element={<EventsPage />} />
-          <Route path="/our-impact" element={<OurImpactPage />} />
           <Route path="/learning-hub" element={<LearningHubPage />} />
           <Route path="/ask-iris" element={<AIAssistantPage />} />
           <Route path="/ai-assistant" element={<AIAssistantPage />} />

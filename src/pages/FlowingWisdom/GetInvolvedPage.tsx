@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Heart, Users, Star, DollarSign, Package, TrendingUp } from 'lucide-react';
+import { Heart, Users, Star, DollarSign, Package, TrendingUp, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -64,6 +64,50 @@ const GetInvolvedPage = () => {
                             Join us in breaking the stigma and empowering communities
                         </p>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Our Impact Stats */}
+            <section className="py-12 px-4 bg-white">
+                <div className="container mx-auto">
+                    <h2 className="text-3xl font-bold text-center text-[#2C1A4D] mb-12">Our Impact</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
+                        <div className="p-4">
+                            <div className="bg-[#ce8fd3] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <BookOpen className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C1A4D] mb-1">150+</div>
+                            <div className="text-sm text-[#6B4C7A]">Workshops Delivered</div>
+                        </div>
+                        <div className="p-4">
+                            <div className="bg-[#4ECDC4] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Package className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C1A4D] mb-1">10,000+</div>
+                            <div className="text-sm text-[#6B4C7A]">Kits Distributed</div>
+                        </div>
+                        <div className="p-4">
+                            <div className="bg-[#FF6B6B] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Users className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C1A4D] mb-1">200+</div>
+                            <div className="text-sm text-[#6B4C7A]">Active Ambassadors</div>
+                        </div>
+                        <div className="p-4">
+                            <div className="bg-[#FFE66D] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <TrendingUp className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C1A4D] mb-1">5+</div>
+                            <div className="text-sm text-[#6B4C7A]">Policy Changes</div>
+                        </div>
+                        <div className="p-4">
+                            <div className="bg-[#B794F6] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Heart className="w-8 h-8 text-white" />
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C1A4D] mb-1">500+</div>
+                            <div className="text-sm text-[#6B4C7A]">Stories Shared</div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
