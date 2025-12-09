@@ -1,8 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from 'sonner';
 import Layout from "./components/shared/Layout";
-import HomePage from "./pages/HomePage";
-import EdulimikaLandingPage from "./pages/EdulimikaLandingPage";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -28,16 +26,19 @@ import ModuleContent from "./pages/ModuleContent";
 import DebugAIGenerator from "./pages/DebugAIGenerator";
 import HelpPage from "./pages/HelpPage";
 import { ErrorBoundary } from "./components/shared/ErrorBoundary";
-import { getSiteConfig } from "./config/sites";
+
+// Flowing Wisdom Pages
+import FlowingWisdomLayout from "./components/FlowingWisdom/FlowingWisdomLayout";
+import FWHomePage from "./pages/FlowingWisdom/HomePage";
+import AboutPage from "./pages/FlowingWisdom/AboutPage";
+import EventsPage from "./pages/FlowingWisdom/EventsPage";
+import OurImpactPage from "./pages/FlowingWisdom/OurImpactPage";
+import LearningHubPage from "./pages/FlowingWisdom/LearningHubPage";
+import FlowArcadePage from "./pages/FlowingWisdom/FlowArcadePage";
+import PeriodTrackerPage from "./pages/FlowingWisdom/PeriodTrackerPage";
+import GetInvolvedPage from "./pages/FlowingWisdom/GetInvolvedPage";
 
 function App() {
-  // Get site configuration to determine which landing page to render
-  const siteConfig = getSiteConfig();
-
-  // Determine landing page component based on site configuration
-  const LandingPage = siteConfig.content.landingPage === 'EdulimikaLandingPage'
-    ? EdulimikaLandingPage
-    : HomePage;
 
   return (
     <>
@@ -58,8 +59,21 @@ function App() {
         }}
       />
       <Routes>
+        {/* Flowing Wisdom Routes */}
+        <Route element={<FlowingWisdomLayout />}>
+          <Route path="/" element={<FWHomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/our-impact" element={<OurImpactPage />} />
+          <Route path="/learning-hub" element={<LearningHubPage />} />
+          <Route path="/ask-iris" element={<AIAssistantPage />} />
+          <Route path="/flow-arcade" element={<FlowArcadePage />} />
+          <Route path="/period-tracker" element={<PeriodTrackerPage />} />
+          <Route path="/get-involved" element={<GetInvolvedPage />} />
+        </Route>
+
+        {/* Legacy/Admin Routes */}
         <Route element={<Layout />}>
-          <Route path="/" element={<LandingPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -87,14 +101,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ai-assistant"
-            element={
-              <ProtectedRoute>
-                <AIAssistantPage />
               </ProtectedRoute>
             }
           />

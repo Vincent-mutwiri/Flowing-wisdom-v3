@@ -1,0 +1,121 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+
+const Navigation = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
+
+    const navLinks = [
+        { path: '/', label: 'Home' },
+        { path: '/about', label: 'About Us' },
+        { path: '/events', label: 'Events' },
+        { path: '/our-impact', label: 'Our Impact' },
+        { path: '/learning-hub', label: 'Learning Hub' },
+        { path: '/ask-iris', label: 'Ask Iris' },
+        { path: '/flow-arcade', label: 'Flow Arcade' },
+        { path: '/period-tracker', label: 'Period Tracker' },
+        { path: '/get-involved', label: 'Get Involved' }
+    ];
+
+    const handleQuickExit = () => {
+        // Redirect to Google and clear history
+        window.location.replace('https://www.google.com');
+    };
+
+    const isActive = (path: string) => {
+        return location.pathname === path;
+    };
+
+    return (
+        <nav className="sticky top-0 z-50 bg-white border-b border-[#E8D4EA] shadow-sm">
+            <div className="container mx-auto px-4">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-2">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#ce8fd3] to-[#B794F6] rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold text-xl">FW</span>
+                        </div>
+                        <span className="text-xl font-bold text-[#2C1A4D]">
+                            Flowing <span className="text-[#ce8fd3]">Wisdom</span>
+                        </span>
+                    </Link>
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden lg:flex items-center gap-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive(link.path)
+                                        ? 'bg-[#ce8fd3] text-white'
+                                        : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
+                                    }`}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Quick Exit & Mobile Menu */}
+                    <div className="flex items-center gap-3">
+                        <Button
+                            onClick={handleQuickExit}
+                            size="sm"
+                            variant="outline"
+                            className="border-[#FF6B6B] text-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white"
+                        >
+                            <AlertTriangle className="w-4 h-4 mr-2" />
+                            <span className="hidden sm:inline">Quick Exit</span>
+                        </Button>
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="lg:hidden p-2 rounded-lg hover:bg-[#F5E6F7] transition-colors"
+                            aria-label="Toggle menu"
+                        >
+                            {isOpen ? (
+                                <X className="w-6 h-6 text-[#2C1A4D]" />
+                            ) : (
+                                <Menu className="w-6 h-6 text-[#2C1A4D]" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="lg:hidden border-t border-[#E8D4EA] bg-white"
+                    >
+                        <div className="container mx-auto px-4 py-4 space-y-2">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive(link.path)
+                                            ? 'bg-[#ce8fd3] text-white'
+                                            : 'text-[#6B4C7A] hover:bg-[#F5E6F7] hover:text-[#2C1A4D]'
+                                        }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </nav>
+    );
+};
+
+export default Navigation;
