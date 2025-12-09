@@ -65,12 +65,12 @@ export interface SiteConfig {
 export const SITE_CONFIGS: Record<string, SiteConfig> = {
     default: {
         name: 'default',
-        displayName: 'Edulimika',
+        displayName: 'Flowing Wisdom',
         domain: 'localhost:5173',
         theme: {
             primaryColor: '#10B981',
             secondaryColor: '#3B82F6',
-            logo: '/logo-edulimika.png'
+            logo: '/logo-flowing-wisdom.png'
         },
         features: {
             showLandingPage: true,
@@ -80,7 +80,7 @@ export const SITE_CONFIGS: Record<string, SiteConfig> = {
         content: {
             landingPage: 'HomePage',
             companyInfo: {
-                name: 'Edulimika',
+                name: 'Flowing Wisdom',
                 description: 'Transforming education through innovative learning solutions and cutting-edge educational technology. We partner with organizations to create engaging, evidence-based learning experiences that drive measurable results.',
                 areasOfWork: [
                     {
@@ -160,12 +160,12 @@ export const SITE_CONFIGS: Record<string, SiteConfig> = {
     },
     edulimika: {
         name: 'edulimika',
-        displayName: 'Edulimika',
-        domain: 'edulimika.com',
+        displayName: 'Flowing Wisdom',
+        domain: 'flowingwisdom.com',
         theme: {
             primaryColor: '#10B981',
             secondaryColor: '#3B82F6',
-            logo: '/logo-edulimika.png'
+            logo: '/logo-flowing-wisdom.png'
         },
         features: {
             showLandingPage: true,
@@ -173,9 +173,9 @@ export const SITE_CONFIGS: Record<string, SiteConfig> = {
             enableAuth: true
         },
         content: {
-            landingPage: 'EdulimikaLandingPage',
+            landingPage: 'Flowing WisdomLandingPage',
             companyInfo: {
-                name: 'Edulimika',
+                name: 'Flowing Wisdom',
                 description: 'Transforming education through innovative learning solutions and cutting-edge educational technology. We partner with organizations to create engaging, evidence-based learning experiences that drive measurable results.',
                 areasOfWork: [
                     {

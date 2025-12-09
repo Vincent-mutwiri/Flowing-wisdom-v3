@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, AlertTriangle } from 'lucide-react';
+import { Menu, X, AlertTriangle, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 const Navigation = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { user } = useAuth();
 
     const navLinks = [
         { path: '/', label: 'Home' },
@@ -61,16 +63,42 @@ const Navigation = () => {
 
                     {/* Quick Exit & Mobile Menu */}
                     <div className="flex items-center gap-3">
-                        {/* Login Button */}
-                        <Link to="/login">
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="hidden md:inline-flex border-[#ce8fd3] text-[#ce8fd3] hover:bg-[#ce8fd3] hover:text-white"
-                            >
-                                Login
-                            </Button>
-                        </Link>
+                        {/* Admin Button - Only show for admin users */}
+                        {user?.role === 'admin' && (
+                            <Link to="/admin">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="hidden md:inline-flex border-[#FFE66D] text-[#2C1A4D] hover:bg-[#FFE66D] hover:text-[#2C1A4D]"
+                                >
+                                    <Shield className="w-4 h-4 mr-2" />
+                                    Admin
+                                </Button>
+                            </Link>
+                        )}
+
+                        {/* Login/Profile Button */}
+                        {user ? (
+                            <Link to="/dashboard">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="hidden md:inline-flex border-[#ce8fd3] text-[#ce8fd3] hover:bg-[#ce8fd3] hover:text-white"
+                                >
+                                    Dashboard
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Link to="/login">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="hidden md:inline-flex border-[#ce8fd3] text-[#ce8fd3] hover:bg-[#ce8fd3] hover:text-white"
+                                >
+                                    Login
+                                </Button>
+                            </Link>
+                        )}
 
                         <Button
                             onClick={handleQuickExit}
@@ -121,14 +149,37 @@ const Navigation = () => {
                                     {link.label}
                                 </Link>
                             ))}
-                            {/* Login Link for Mobile */}
-                            <Link
-                                to="/login"
-                                onClick={() => setIsOpen(false)}
-                                className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-[#ce8fd3] text-white text-center"
-                            >
-                                Login / Sign Up
-                            </Link>
+
+                            {/* Admin Link for Mobile - Only for admin users */}
+                            {user?.role === 'admin' && (
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setIsOpen(false)}
+                                    className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-[#FFE66D] text-[#2C1A4D] text-center"
+                                >
+                                    <Shield className="w-4 h-4 inline-block mr-2" />
+                                    Admin Panel
+                                </Link>
+                            )}
+
+                            {/* Login/Dashboard Link for Mobile */}
+                            {user ? (
+                                <Link
+                                    to="/dashboard"
+                                    onClick={() => setIsOpen(false)}
+                                    className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-[#ce8fd3] text-white text-center"
+                                >
+                                    Dashboard
+                                </Link>
+                            ) : (
+                                <Link
+                                    to="/login"
+                                    onClick={() => setIsOpen(false)}
+                                    className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-[#ce8fd3] text-white text-center"
+                                >
+                                    Login / Sign Up
+                                </Link>
+                            )}
                         </div>
                     </motion.div>
                 )}

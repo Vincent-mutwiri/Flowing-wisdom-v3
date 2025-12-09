@@ -67,6 +67,7 @@ function App() {
           <Route path="/our-impact" element={<OurImpactPage />} />
           <Route path="/learning-hub" element={<LearningHubPage />} />
           <Route path="/ask-iris" element={<AIAssistantPage />} />
+          <Route path="/ai-assistant" element={<AIAssistantPage />} />
           <Route path="/flow-arcade" element={<FlowArcadePage />} />
           <Route path="/period-tracker" element={<PeriodTrackerPage />} />
           <Route path="/get-involved" element={<GetInvolvedPage />} />
