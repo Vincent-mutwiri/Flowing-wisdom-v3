@@ -52,37 +52,13 @@ export const CertificateGenerator = ({ userName: propUserName, courseTitle, conf
         throw new Error('Could not get canvas context');
       }
 
-      // Helper function to load images with CORS proxy fallback
       const loadImage = (src: string): Promise<HTMLImageElement> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const img = new Image();
-          // Append timestamp to avoid caching issues with CORS
-          const corsSrc = src + (src.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-
-          // Try without crossOrigin first (for same-origin images)
-          const tryLoad = (useCors: boolean) => {
-            if (useCors) {
-              img.crossOrigin = 'anonymous';
-            }
-
-            img.onload = () => resolve(img);
-            img.onerror = () => {
-              if (useCors) {
-                // If CORS failed, try without it
-                console.warn(`CORS failed for ${src}, trying without crossOrigin`);
-                const img2 = new Image();
-                img2.onload = () => resolve(img2);
-                img2.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-                img2.src = src; // Fallback to original src without cache buster if needed, though usually we want the buster
-              } else {
-                reject(new Error(`Failed to load image: ${src}`));
-              }
-            };
-            img.src = useCors ? corsSrc : src;
-          };
-
-          // Start with CORS enabled
-          tryLoad(true);
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(img);
+          img.src = src + (src.includes('?') ? '&' : '?') + 't=' + Date.now();
         });
       };
 
@@ -188,13 +164,7 @@ export const CertificateGenerator = ({ userName: propUserName, courseTitle, conf
       });
     } catch (error: any) {
       console.error('Error generating certificate:', error);
-
-      if (error.name === 'SecurityError' || error.message?.includes('Tainted')) {
-        toast.error('Security Error: S3 CORS configuration missing. Please update your bucket permissions.');
-      } else {
-        toast.error('Failed to generate certificate');
-      }
-
+      toast.error('Failed to generate certificate');
       setGenerating(false);
     }
   };
