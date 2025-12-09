@@ -1,0 +1,520 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { adminAPI, courseAPI } from "@/services/api";
+import api from "@/services/api";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Users, BookOpen, GraduationCap, TrendingUp, Activity, Award, Zap, Edit, Upload, X, Trash2 } from "lucide-react";
+import { ProfileWidget } from "@/components/admin/ProfileWidget";
+import { toast } from "sonner";
+
+export default function AdminPage() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState<any>(null);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [showCourseForm, setShowCourseForm] = useState(false);
+  const [showQuizForm, setShowQuizForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [instructorImageUrl, setInstructorImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [statsData, coursesData] = await Promise.all([
+        adminAPI.getStats(),
+        courseAPI.getAll(),
+      ]);
+      setStats(statsData.stats);
+      setCourses(coursesData.courses);
+
+      // Fetch analytics for first course
+      if (coursesData.courses.length > 0) {
+        const analyticsData = await api.get(`/analytics/stats?courseId=${coursesData.courses[0]._id}`);
+        setAnalytics(analyticsData.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch admin data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleThumbnailUpload = async (file: File) => {
+    if (!file) {
+      console.log('No file provided to handleThumbnailUpload');
+      return;
+    }
+
+    console.log('Uploading thumbnail:', file.name, file.size, file.type);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('FormData created, sending to /admin/upload');
+      const response = await api.post('/admin/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Upload response:', response.data);
+      const url = response.data.url;
+      setThumbnailUrl(url);
+      toast.success('Thumbnail uploaded successfully');
+    } catch (error: any) {
+      console.error('Failed to upload thumbnail:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      toast.error(`Failed to upload thumbnail: ${errorMessage}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleInstructorImageUpload = async (file: File) => {
+    if (!file) {
+      console.log('No file provided to handleInstructorImageUpload');
+      return;
+    }
+
+    console.log('Uploading instructor image:', file.name, file.size, file.type);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('FormData created, sending to /admin/upload');
+      const response = await api.post('/admin/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Upload response:', response.data);
+      const url = response.data.url;
+      setInstructorImageUrl(url);
+      toast.success('Instructor image uploaded successfully');
+    } catch (error: any) {
+      console.error('Failed to upload instructor image:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      toast.error(`Failed to upload instructor image: ${errorMessage}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      await adminAPI.createCourse({
+        title: formData.get("title"),
+        description: formData.get("description"),
+        instructor: formData.get("instructor"),
+        instructorImage: instructorImageUrl || formData.get("instructorImage"),
+        thumbnail: thumbnailUrl || formData.get("thumbnail"),
+        category: formData.get("category"),
+        level: formData.get("level"),
+        isPublished: true,
+        modules: [],
+      });
+      setShowCourseForm(false);
+      setThumbnailUrl("");
+      setInstructorImageUrl("");
+      toast.success('Course created successfully');
+      fetchData();
+    } catch (error) {
+      console.error("Failed to create course", error);
+      toast.error('Failed to create course');
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string, courseTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${courseTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingCourseId(courseId);
+    try {
+      await adminAPI.deleteCourse(courseId);
+      toast.success('Course deleted successfully');
+      fetchData();
+    } catch (error: any) {
+      console.error("Failed to delete course", error);
+      toast.error('Failed to delete course');
+    } finally {
+      setDeletingCourseId(null);
+    }
+  };
+
+  const handleCreateQuiz = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      await adminAPI.createQuiz({
+        courseId: formData.get("courseId"),
+        lessonId: formData.get("lessonId"),
+        title: formData.get("title"),
+        passingScore: Number(formData.get("passingScore")),
+        questions: [
+          {
+            question: formData.get("question1"),
+            options: [
+              { text: formData.get("option1_1"), isCorrect: true },
+              { text: formData.get("option1_2"), isCorrect: false },
+              { text: formData.get("option1_3"), isCorrect: false },
+              { text: formData.get("option1_4"), isCorrect: false },
+            ],
+            explanation: formData.get("explanation1"),
+          },
+        ],
+      });
+      setShowQuizForm(false);
+      alert("Quiz created successfully!");
+    } catch (error) {
+      console.error("Failed to create quiz", error);
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+
+      {/* Main Grid Layout */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column - Profile Widget */}
+        <div className="lg:col-span-1">
+          <ProfileWidget />
+        </div>
+
+        {/* Right Column - Stats */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalCourses || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Published</CardTitle>
+                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.publishedCourses || 0}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Enrollments</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats?.totalEnrollments || 0}</div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {analytics && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Course Analytics</CardTitle>
+            <CardDescription>Track user engagement and AI usage</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Activity className="h-8 w-8 text-blue-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Events</p>
+                  <p className="text-2xl font-bold">
+                    {analytics.stats?.reduce((sum: number, s: any) => sum + s.count, 0) || 0}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Award className="h-8 w-8 text-green-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Certificates Earned</p>
+                  <p className="text-2xl font-bold">{analytics.certificateCompletionRate || 0}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 border rounded-lg">
+                <Zap className="h-8 w-8 text-yellow-600" />
+                <div>
+                  <p className="text-sm text-muted-foreground">AI Requests</p>
+                  <p className="text-2xl font-bold">{analytics.totalAIRequests || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            {analytics.stats && analytics.stats.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold mb-3">Event Breakdown</h3>
+                <div className="space-y-2">
+                  {analytics.stats.map((stat: any) => (
+                    <div key={stat._id} className="flex justify-between items-center p-2 border rounded">
+                      <span className="text-sm capitalize">{stat._id.replace('_', ' ')}</span>
+                      <span className="font-semibold">{stat.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Course Management</CardTitle>
+            <CardDescription>Create and manage courses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!showCourseForm ? (
+              <Button onClick={() => setShowCourseForm(true)}>Create New Course</Button>
+            ) : (
+              <form onSubmit={handleCreateCourse} className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Title</Label>
+                  <Input id="title" name="title" required />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input id="description" name="description" required />
+                </div>
+                <div>
+                  <Label htmlFor="instructor">Instructor</Label>
+                  <Input id="instructor" name="instructor" required />
+                </div>
+                <div>
+                  <Label>Instructor Profile Image</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={(e) => {
+                          console.log('Instructor image file input changed', e.target.files);
+                          if (e.target.files && e.target.files.length > 0) {
+                            const file = e.target.files[0];
+                            console.log('Selected instructor image file:', file);
+                            handleInstructorImageUpload(file);
+                          } else {
+                            console.log('No files selected for instructor image');
+                          }
+                        }}
+                        disabled={uploading}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                      />
+                      {instructorImageUrl && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setInstructorImageUrl("")}
+                          title="Remove instructor image"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {instructorImageUrl && (
+                      <div className="border rounded p-2 bg-muted/30">
+                        <img src={instructorImageUrl} alt="Instructor preview" className="h-24 w-24 object-cover rounded-full mx-auto" />
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Upload instructor profile image (JPEG, PNG, GIF, or WebP, max 5MB)
+                    </p>
+                  </div>
+                  <Input id="instructorImage" name="instructorImage" type="hidden" value={instructorImageUrl} />
+                </div>
+                <div>
+                  <Label>Course Thumbnail Image</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleThumbnailUpload(e.target.files[0]);
+                          }
+                        }}
+                        disabled={uploading}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+                      />
+                      {thumbnailUrl && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setThumbnailUrl("")}
+                          title="Remove thumbnail"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {thumbnailUrl && (
+                      <div className="border rounded p-2 bg-muted/30">
+                        <img src={thumbnailUrl} alt="Course thumbnail preview" className="h-32 w-full object-cover rounded" />
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Upload a course thumbnail (JPEG, PNG, GIF, or WebP, max 5MB)
+                    </p>
+                  </div>
+                  <Input id="thumbnail" name="thumbnail" type="hidden" value={thumbnailUrl} />
+                </div>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Input id="category" name="category" required />
+                </div>
+                <div>
+                  <Label htmlFor="level">Level</Label>
+                  <select id="level" name="level" className="w-full border rounded p-2" required>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit">Create</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowCourseForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            <div className="mt-6 space-y-2">
+              <h3 className="font-semibold">Existing Courses ({courses.length})</h3>
+              {courses.slice(0, 5).map((course) => (
+                <div key={course._id} className="flex justify-between items-center p-3 border rounded hover:bg-muted/50 transition-colors">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{course.title}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{course.level}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate(`/admin/courses/${course._id}/builder`)}
+                      className="gap-2"
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeleteCourse(course._id, course.title)}
+                      disabled={deletingCourseId === course._id}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deletingCourseId === course._id ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {courses.length > 5 && (
+                <p className="text-xs text-muted-foreground text-center pt-2">
+                  Showing 5 of {courses.length} courses
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quiz Management</CardTitle>
+            <CardDescription>Create and manage quizzes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!showQuizForm ? (
+              <Button onClick={() => setShowQuizForm(true)}>Create New Quiz</Button>
+            ) : (
+              <form onSubmit={handleCreateQuiz} className="space-y-4">
+                <div>
+                  <Label htmlFor="courseId">Course ID</Label>
+                  <select id="courseId" name="courseId" className="w-full border rounded p-2" required>
+                    {courses.map((course) => (
+                      <option key={course._id} value={course._id}>
+                        {course.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="lessonId">Lesson ID</Label>
+                  <Input id="lessonId" name="lessonId" required />
+                </div>
+                <div>
+                  <Label htmlFor="title">Quiz Title</Label>
+                  <Input id="title" name="title" required />
+                </div>
+                <div>
+                  <Label htmlFor="passingScore">Passing Score (%)</Label>
+                  <Input id="passingScore" name="passingScore" type="number" defaultValue="70" required />
+                </div>
+                <div>
+                  <Label>Question 1</Label>
+                  <Input name="question1" placeholder="Question text" required className="mb-2" />
+                  <Input name="option1_1" placeholder="Correct answer" required className="mb-1" />
+                  <Input name="option1_2" placeholder="Wrong answer" required className="mb-1" />
+                  <Input name="option1_3" placeholder="Wrong answer" required className="mb-1" />
+                  <Input name="option1_4" placeholder="Wrong answer" required className="mb-1" />
+                  <Input name="explanation1" placeholder="Explanation (optional)" />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit">Create</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowQuizForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

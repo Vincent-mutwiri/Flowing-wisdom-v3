@@ -1,0 +1,292 @@
+import axios from "axios";
+import { getToken, removeToken } from "@/utils/token";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log detailed error information
+    console.error('[API] Request failed:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      data: error.response?.data
+    });
+
+    if (error.response?.status === 401) {
+      const currentPath = window.location.pathname;
+      // List of public pages that should not trigger auto-redirect
+      const publicPages = ['/login', '/signup', '/courses', '/forgot-password', '/', '/help'];
+      const isPublicPage = publicPages.some(page => currentPath === page || currentPath.startsWith('/course/'));
+
+      if (!isPublicPage) {
+        console.log('[API] Unauthorized - redirecting to login');
+        removeToken();
+        localStorage.setItem('redirectAfterLogin', currentPath);
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authAPI = {
+  signup: async (name: string, email: string, password: string) => {
+    const { data } = await api.post("/auth/signup", { name, email, password });
+    return data;
+  },
+  login: async (email: string, password: string) => {
+    const { data } = await api.post("/auth/login", { email, password });
+    return data;
+  },
+  verifyToken: async () => {
+    const { data } = await api.get("/auth/verify");
+    return data;
+  },
+  forgotPassword: async (email: string) => {
+    const { data } = await api.post("/auth/forgot-password", { email });
+    return data;
+  },
+  resetPassword: async (token: string, password: string) => {
+    const { data } = await api.post(`/auth/reset-password/${token}`, { password });
+    return data;
+  },
+};
+
+export const userAPI = {
+  updateProfile: async (name: string, email: string, avatar?: string) => {
+    const { data } = await api.put("/user/profile", { name, email, avatar });
+    return data;
+  },
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    const { data } = await api.put("/user/change-password", { currentPassword, newPassword });
+    return data;
+  },
+};
+
+export const courseAPI = {
+  getAll: async (filters?: { category?: string; level?: string; search?: string }) => {
+    const { data } = await api.get("/courses", { params: filters });
+    return data;
+  },
+  getById: async (id: string) => {
+    const { data } = await api.get(`/courses/${id}`);
+    return data;
+  },
+  enroll: async (courseId: string) => {
+    const { data } = await api.post(`/courses/${courseId}/enroll`);
+    return data;
+  },
+};
+
+export const enrollmentAPI = {
+  getMyCourses: async () => {
+    const { data } = await api.get("/enrollments/my-courses");
+    return data;
+  },
+  getProgress: async (courseId: string) => {
+    const { data } = await api.get(`/enrollments/${courseId}`);
+    return data;
+  },
+  updateProgress: async (courseId: string, lessonId: string, completed: boolean) => {
+    const { data } = await api.put(`/enrollments/${courseId}/progress`, { lessonId, completed });
+    return data;
+  },
+  getStats: async () => {
+    const { data } = await api.get("/enrollments/stats/overview");
+    return data;
+  },
+};
+
+export const uploadAPI = {
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  uploadVideo: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/video", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  uploadDocument: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/upload/document", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  getSignedUrl: async (fileName: string, fileType: string, folder: string) => {
+    const { data } = await api.post("/upload/signed-url", { fileName, fileType, folder });
+    return data;
+  },
+  deleteFile: async (fileUrl: string) => {
+    const { data } = await api.delete("/upload", { data: { fileUrl } });
+    return data;
+  },
+};
+
+export const aiAPI = {
+  chat: async (message: string, context?: Array<{ text: string; type: string }>) => {
+    const { data } = await api.post("/ai/chat", { message, context });
+    return data;
+  },
+  generate: async (generatorType: string, userInput: string, options?: Record<string, any>) => {
+    const { data } = await api.post("/ai/generate", { generatorType, userInput, options });
+    return data;
+  },
+  getUsageStats: async (filters?: { courseId?: string; startDate?: string; endDate?: string }) => {
+    const { data } = await api.get("/ai/usage-stats", { params: filters });
+    return data;
+  },
+};
+
+export const quizAPI = {
+  getQuiz: async (quizId: string) => {
+    const { data } = await api.get(`/quizzes/${quizId}`);
+    return data;
+  },
+  submitQuiz: async (quizId: string, answers: Array<{ selectedOption: number }>) => {
+    const { data } = await api.post(`/quizzes/${quizId}/submit`, { answers });
+    return data;
+  },
+  getAttempts: async (quizId: string) => {
+    const { data } = await api.get(`/quizzes/${quizId}/attempts`);
+    return data;
+  },
+};
+
+export const progressAPI = {
+  get: async (courseId: string) => {
+    const { data } = await api.get(`/progress/${courseId}`);
+    return data;
+  },
+  updateLesson: async (courseId: string, moduleId: string, lessonIndex: number, completed: boolean, quizScore?: number) => {
+    const { data } = await api.post(`/progress/${courseId}/lesson`, { moduleId, lessonIndex, completed, quizScore });
+    return data;
+  },
+  updateAccess: async (courseId: string, moduleId: string, lessonIndex: number) => {
+    const { data } = await api.post(`/progress/${courseId}/access`, { moduleId, lessonIndex });
+    return data;
+  },
+};
+
+export const adminAPI = {
+  getStats: async () => {
+    const { data } = await api.get("/admin/stats");
+    return data;
+  },
+  createCourse: async (courseData: any) => {
+    const { data } = await api.post("/admin/courses", courseData);
+    return data;
+  },
+  updateCourse: async (id: string, courseData: any) => {
+    const { data } = await api.put(`/admin/courses/${id}`, courseData);
+    return data;
+  },
+  deleteCourse: async (id: string) => {
+    const { data } = await api.delete(`/admin/courses/${id}`);
+    return data;
+  },
+  createQuiz: async (quizData: any) => {
+    const { data } = await api.post("/admin/quizzes", quizData);
+    return data;
+  },
+  updateQuiz: async (id: string, quizData: any) => {
+    const { data } = await api.put(`/admin/quizzes/${id}`, quizData);
+    return data;
+  },
+  deleteQuiz: async (id: string) => {
+    const { data } = await api.delete(`/admin/quizzes/${id}`);
+    return data;
+  },
+  getUsers: async () => {
+    const { data } = await api.get("/admin/users");
+    return data;
+  },
+};
+
+export const mediaAPI = {
+  getPresignedUrl: async (s3Key: string) => {
+    const { data } = await api.get("/media/url", { params: { key: s3Key } });
+    return data;
+  },
+  uploadVideo: async (file: File, folder: string = "videos") => {
+    const formData = new FormData();
+    formData.append("video", file);
+    formData.append("folder", folder);
+    const { data } = await api.post("/media/upload/video", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  uploadImage: async (file: File, folder: string = "images") => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("folder", folder);
+    const { data } = await api.post("/media/upload/image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+  deleteMedia: async (s3Key: string) => {
+    const { data } = await api.delete("/media/delete", { data: { key: s3Key } });
+    return data;
+  },
+};
+
+export const profileAPI = {
+  getProfile: async () => {
+    const { data } = await api.get("/profile");
+    return data;
+  },
+};
+
+export const pageEditorApi = {
+  getPage: async (id: string) => {
+    const { data } = await api.get(`/admin/pages/${id}`);
+    return data;
+  },
+  createPage: async (pageData: any) => {
+    const { data } = await api.post("/admin/pages", pageData);
+    return data;
+  },
+  updatePage: async (id: string, pageData: any) => {
+    const { data } = await api.put(`/admin/pages/${id}`, pageData);
+    return data;
+  },
+  uploadFile: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await api.post("/admin/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  },
+};
+
+export default api;
